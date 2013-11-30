@@ -27,7 +27,6 @@
 (defmethod parse "s"
   [data]
   (let [re #"^\d+:\"(.*)\"$"]
-    (println (value-of data))
     (second (re-matches re (value-of data)))))
 
 (defn unserialize [data]
