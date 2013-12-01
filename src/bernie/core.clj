@@ -1,24 +1,62 @@
 
 (ns bernie.core)
 
-;; Utils
-;; -----
+(defmulti parse #(subs % 0 1))
+
+(defn index-of [c string]
+  (.indexOf string c))
+
+(def colon (partial index-of ":"))
+(def semi (partial index-of ";"))
+
+(defn to-str [f]
+  (comp (partial apply str) f))
+
+(def stake (to-str take))
+(def sdrop (to-str drop))
 
 (defn value-of [part]
-  (subs part 2 (.indexOf part ";")))
+  (subs part 2 (semi part)))
 
 (defn length-of [part]
   (let [data (subs part 2)]
     (Long/parseLong
-      (subs data 0 (.indexOf data ":")))))
+      (stake (colon data) data))))
 
-(defn with-rest [f part]
-  [(f part) (subs part (.indexOf part ";"))])
+(defn rest-of [f part]
+  [(f part)
+   (sdrop (inc (semi part)) part)])
+
+(defn data-of [part]
+  (sdrop 2 part))
+
+(defn content-of [data]
+  (sdrop (+ 2 (colon data)) data))
+
+(defn ->vector [values]
+  (apply vector
+    (map second (partition 2 values))))
+
+(defn ->values [part]
+  (let [data (data-of part)]
+    (loop [results []
+           content (content-of data)
+           remaining (* 2 (length-of part))]
+      (if (> remaining 0)
+        (let [[value more] (parse content)]
+          (recur
+            (conj results value)
+            more
+            (dec remaining)))
+        [results content]))))
 
 ;; Parsing
 ;; -------
 
 (defn ->nil [part])
+
+(defn ->boolean [part]
+  (if (= "1" (value-of part)) true false))
 
 (defn ->long [part]
   (Long/parseLong (value-of part)))
@@ -27,25 +65,24 @@
   (Double/parseDouble (value-of part)))
 
 (defn ->string [part]
-  (let [length (length-of part)
-        data (subs part 2)
-        value (take length (subs data (+ 2 (.indexOf data ":"))))]
-    [(apply str value) (subs data (+ 3 length))]))
+  (let [data (data-of part)
+        length (length-of part)]
+    [(stake length (content-of data))
+     (sdrop (+ 3 length) data)]))
 
-(defn ->boolean [part]
-  (if (= "1" (value-of part)) true false))
+(defn ->array [part]
+  (let [[value more] (->values part)]
+    [(->vector value) (sdrop 1 more)]))
 
 ;; Dispatching
 ;; -----------
 
-(defmulti ^{:doc "Return a vector of the matched value and the rest of the data."}
-  parse #(subs % 0 1))
-
-(defmethod parse "N" [part] (with-rest ->nil part))
-(defmethod parse "b" [part] (with-rest ->boolean part))
-(defmethod parse "i" [part] (with-rest ->long part))
-(defmethod parse "d" [part] (with-rest ->double part))
+(defmethod parse "N" [part] (rest-of ->nil part))
+(defmethod parse "b" [part] (rest-of ->boolean part))
+(defmethod parse "i" [part] (rest-of ->long part))
+(defmethod parse "d" [part] (rest-of ->double part))
 (defmethod parse "s" [part] (->string part))
+(defmethod parse "a" [part] (->array part))
 
 ;; Public
 ;; ------

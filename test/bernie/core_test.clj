@@ -25,7 +25,12 @@
 (deftest parsing-strings
   (testing "strings are parsed to strings"
     (is (= "foobar" (unserialize "s:6:\"foobar\";")))))
-    (is (= "foo;:bar" (unserialize "s:8:\"foo;:bar\";")))
+    (is (= "foo;:bar:;" (unserialize "s:10:\"foo;:bar:;\";")))
+
+(deftest parsing-arrays
+  (testing "arrays are parsed to vectors with contents"
+    (is (= [1 2] (unserialize "a:2:{i:0;i:1;i:1;i:2;}i:2;")))
+    (is (= [[2]] (unserialize "a:1:{i:0;a:1:{i:0;i:2;}}")))))
 
 (run-tests)
 
