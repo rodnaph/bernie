@@ -3,6 +3,15 @@
   (:require [clojure.test :refer :all]
             [bernie.core :refer :all]))
 
+(deftest parsing-serialized-data
+  (testing "parsing data dumped directly from PHP serialize"
+    (is (= nil (unserialize (slurp "test/data/null.ser"))))
+    (is (= true (unserialize (slurp "test/data/boolean.ser"))))
+    (is (= 12345 (unserialize (slurp "test/data/integer.ser"))))
+    (is (= 123.45 (unserialize (slurp "test/data/decimal.ser"))))
+    (is (= "foobar" (unserialize (slurp "test/data/string.ser"))))
+    (is (= [1 2 3] (unserialize (slurp "test/data/array.ser"))))))
+
 (deftest parsing-nulls
   (testing "null is parsed as nil"
     (is (= nil (unserialize "N;")))))
