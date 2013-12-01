@@ -37,5 +37,8 @@
     (is (= {"foo" [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
     (is (= {"foo" "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
 
-(run-tests)
+(deftest parsing-objects
+  (testing "objects are parsed into maps of their properties"
+    (is (= {"public" 1 "protected" 2 "private" 3}
+           (unserialize "O:4:"Test":3:{s:6:"public";i:1;s:12:"\0*\0protected";i:2;s:13:"\0Test\0private";i:3;}")))))
 
