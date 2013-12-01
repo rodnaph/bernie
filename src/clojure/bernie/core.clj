@@ -91,7 +91,7 @@
 
 (defn ->object [part]
   (let [length (length-of part)
-        data (sdrop (+ length 5) part)
+        data (sdrop (+ 4 length (colon (data-of part))) part)
         [value more] (->values data)]
     [(->vec-or-map (map clean-nulls value))
      more]))

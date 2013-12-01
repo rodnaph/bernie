@@ -51,7 +51,8 @@
 (deftest parsing-objects
   (testing "objects are parsed into maps of their properties"
     (is (= {"public" 1 "protected" 2 "private" 3}
-           (unserialize (slurp "test/data/object.ser"))))))
+           (unserialize (slurp "test/data/object.ser"))))
+    (is (= {"foo" 1} (unserialize "O:12:\"FooBarFooBar\":1:{s:3:\"foo\";i:1;}")))))
 
 (deftest parsing-custom
   (testing "custom serialization format is ignored"
