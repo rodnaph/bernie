@@ -24,7 +24,8 @@
 
 (deftest parsing-strings
   (testing "strings are parsed to strings"
-    (is (= "foobar" (unserialize "s:6:\"foobar\";")))))
+    (is (= "foobar" (unserialize "s:6:\"foobar\";")))
+    (is (= "foobar" (unserialize "s:6:\"foobar\";i:2;")))))
     (is (= "foo;:bar:;" (unserialize "s:10:\"foo;:bar:;\";")))
 
 (deftest parsing-arrays
@@ -33,8 +34,8 @@
     (is (= [1 2] (unserialize "a:2:{i:0;i:1;i:1;i:2;}i:2;")))
     (is (= [[2]] (unserialize "a:1:{i:0;a:1:{i:0;i:2;}}")))
     ; hashmaps
-    (is (= {:foo [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
-    (is (= {:foo "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
+    (is (= {"foo" [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
+    (is (= {"foo" "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
 
 (run-tests)
 

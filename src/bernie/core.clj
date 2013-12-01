@@ -40,9 +40,9 @@
 (defn ->vec-or-map [keyvals]
   (let [all (partition 2 keyvals)
         ks (map first all)]
-   (if (every? int? ks)
-     (apply vector (map second all))
-     (apply hash-map keyvals))))
+    (if (every? int? ks)
+      (apply vector (map second all))
+      (apply hash-map keyvals))))
 
 (defn ->values [part]
   (let [data (data-of part)]
@@ -75,7 +75,7 @@
   (let [data (data-of part)
         length (length-of part)]
     [(stake length (content-of data))
-     (sdrop (+ 3 length) data)]))
+     (sdrop (+ 5 length) data)]))
 
 (defn ->array [part]
   (let [[value more] (->values part)]
