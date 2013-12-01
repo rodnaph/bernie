@@ -32,3 +32,7 @@ Bernie does not support the 'C' custom serialization format, as the
 implementing code will not be available.  And serialized data containing
 this information will throw an exception.
 
+## Installation
+
+Bernie is available via [Clojars](https://clojars.org/rodnaph/bernie).
+
