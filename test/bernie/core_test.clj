@@ -29,8 +29,12 @@
 
 (deftest parsing-arrays
   (testing "arrays are parsed to vectors with contents"
+    ; vectors
     (is (= [1 2] (unserialize "a:2:{i:0;i:1;i:1;i:2;}i:2;")))
-    (is (= [[2]] (unserialize "a:1:{i:0;a:1:{i:0;i:2;}}")))))
+    (is (= [[2]] (unserialize "a:1:{i:0;a:1:{i:0;i:2;}}")))
+    ; hashmaps
+    (is (= {:foo [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
+    (is (= {:foo "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
 
 (run-tests)
 

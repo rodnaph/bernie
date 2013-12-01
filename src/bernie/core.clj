@@ -3,6 +3,10 @@
 
 (defmulti parse #(subs % 0 1))
 
+(defn int? [value]
+  (boolean
+    (re-matches #"\d+" (str value))))
+
 (defn index-of [c string]
   (.indexOf string c))
 
@@ -33,9 +37,12 @@
 (defn content-of [data]
   (sdrop (+ 2 (colon data)) data))
 
-(defn ->vector [values]
-  (apply vector
-    (map second (partition 2 values))))
+(defn ->vec-or-map [keyvals]
+  (let [all (partition 2 keyvals)
+        ks (map first all)]
+   (if (every? int? ks)
+     (apply vector (map second all))
+     (apply hash-map keyvals))))
 
 (defn ->values [part]
   (let [data (data-of part)]
@@ -72,7 +79,7 @@
 
 (defn ->array [part]
   (let [[value more] (->values part)]
-    [(->vector value) (sdrop 1 more)]))
+    [(->vec-or-map value) (sdrop 1 more)]))
 
 ;; Dispatching
 ;; -----------
