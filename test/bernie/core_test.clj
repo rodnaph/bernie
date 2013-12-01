@@ -34,8 +34,9 @@
 (deftest parsing-strings
   (testing "strings are parsed to strings"
     (is (= "foobar" (unserialize "s:6:\"foobar\";")))
-    (is (= "foobar" (unserialize "s:6:\"foobar\";i:2;")))))
+    (is (= "foobar" (unserialize "s:6:\"foobar\";i:2;")))
     (is (= "foo;:bar:;" (unserialize "s:10:\"foo;:bar:;\";")))
+    (is (= "foobarfoobar" (unserialize "s:12:\"foobarfoobar\";")))))
 
 (deftest parsing-arrays
   (testing "arrays are parsed to vectors with contents"
@@ -49,5 +50,7 @@
 (deftest parsing-objects
   (testing "objects are parsed into maps of their properties"
     (is (= {"public" 1 "protected" 2 "private" 3}
-           (unserialize "O:4:"Test":3:{s:6:"public";i:1;s:12:"\0*\0protected";i:2;s:13:"\0Test\0private";i:3;}")))))
+           (unserialize (slurp "test/data/object.ser"))))))
+
+(run-tests)
 

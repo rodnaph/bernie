@@ -1,5 +1,6 @@
 
-(ns bernie.core)
+(ns bernie.core
+  (:require [clojure.string :as str]))
 
 (defmulti parse #(subs % 0 1))
 
@@ -57,6 +58,11 @@
             (dec remaining)))
         [results content]))))
 
+(defn clean-nulls [value]
+  (if (string? value)
+    (str/replace value #"\x00.*\x00" "")
+    value))
+
 ;; Parsing
 ;; -------
 
@@ -75,11 +81,19 @@
   (let [data (data-of part)
         length (length-of part)]
     [(stake length (content-of data))
-     (sdrop (+ 5 length) data)]))
+     (sdrop (+ 4 (colon data) length) data)]))
 
 (defn ->array [part]
   (let [[value more] (->values part)]
-    [(->vec-or-map value) (sdrop 1 more)]))
+    [(->vec-or-map value)
+     (sdrop 1 more)]))
+
+(defn ->object [part]
+  (let [length (length-of part)
+        data (sdrop (+ length 5) part)
+        [value more] (->values data)]
+    [(->vec-or-map (map clean-nulls value))
+     more]))
 
 ;; Dispatching
 ;; -----------
@@ -90,6 +104,7 @@
 (defmethod parse "d" [part] (rest-of ->double part))
 (defmethod parse "s" [part] (->string part))
 (defmethod parse "a" [part] (->array part))
+(defmethod parse "O" [part] (->object part))
 
 ;; Public
 ;; ------
