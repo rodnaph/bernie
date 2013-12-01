@@ -1,34 +1,55 @@
 
 (ns bernie.core)
 
-(defn value-of [data]
-  (subs data 2 (dec (count data))))
+;; Utils
+;; -----
 
-(defmulti parse #(subs % 0 1))
+(defn value-of [part]
+  (subs part 2 (.indexOf part ";")))
 
-(defmethod parse "N"
-  [_]
-  nil)
+(defn length-of [part]
+  (let [data (subs part 2)]
+    (Long/parseLong
+      (subs data 0 (.indexOf data ":")))))
 
-(defmethod parse "b"
-  [data]
-  (if (= "1" (value-of data))
-    true
-    false))
+(defn with-rest [f part]
+  [(f part) (subs part (.indexOf part ";"))])
 
-(defmethod parse "i"
-  [data]
-  (Long/parseLong (value-of data)))
+;; Parsing
+;; -------
 
-(defmethod parse "d"
-  [data]
-  (Double/parseDouble (value-of data)))
+(defn ->nil [part])
 
-(defmethod parse "s"
-  [data]
-  (let [re #"^\d+:\"(.*)\"$"]
-    (second (re-matches re (value-of data)))))
+(defn ->long [part]
+  (Long/parseLong (value-of part)))
+
+(defn ->double [part]
+  (Double/parseDouble (value-of part)))
+
+(defn ->string [part]
+  (let [length (length-of part)
+        data (subs part 2)
+        value (take length (subs data (+ 2 (.indexOf data ":"))))]
+    [(apply str value) (subs data (+ 3 length))]))
+
+(defn ->boolean [part]
+  (if (= "1" (value-of part)) true false))
+
+;; Dispatching
+;; -----------
+
+(defmulti ^{:doc "Return a vector of the matched value and the rest of the data."}
+  parse #(subs % 0 1))
+
+(defmethod parse "N" [part] (with-rest ->nil part))
+(defmethod parse "b" [part] (with-rest ->boolean part))
+(defmethod parse "i" [part] (with-rest ->long part))
+(defmethod parse "d" [part] (with-rest ->double part))
+(defmethod parse "s" [part] (->string part))
+
+;; Public
+;; ------
 
 (defn unserialize [data]
-  (parse data))
+  (first (parse data)))
 
