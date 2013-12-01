@@ -1,5 +1,6 @@
 
 (ns bernie.core
+  (:import com.pugh.bernie.UnserializeException)
   (:require [clojure.string :as str]))
 
 (defmulti parse #(subs % 0 1))
@@ -105,6 +106,7 @@
 (defmethod parse "s" [part] (->string part))
 (defmethod parse "a" [part] (->array part))
 (defmethod parse "O" [part] (->object part))
+(defmethod parse "C" [part] (throw (UnserializeException. "Custom serialization not supported")))
 
 ;; Public
 ;; ------

@@ -1,5 +1,6 @@
 
 (ns bernie.core-test
+  (:import com.pugh.bernie.UnserializeException)
   (:require [clojure.test :refer :all]
             [bernie.core :refer :all]))
 
@@ -51,6 +52,10 @@
   (testing "objects are parsed into maps of their properties"
     (is (= {"public" 1 "protected" 2 "private" 3}
            (unserialize (slurp "test/data/object.ser"))))))
+
+(deftest parsing-custom
+  (testing "custom serialization format is ignored"
+    (is (thrown? UnserializeException (unserialize "a:1:{i:0;C:4:\"Test\":6:{foobar}i:1;i:1;}")))))
 
 (run-tests)
 
