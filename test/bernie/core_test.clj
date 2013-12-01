@@ -45,14 +45,14 @@
     (is (= [1 2] (unserialize "a:2:{i:0;i:1;i:1;i:2;}i:2;")))
     (is (= [[2]] (unserialize "a:1:{i:0;a:1:{i:0;i:2;}}")))
     ; hashmaps
-    (is (= {"foo" [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
-    (is (= {"foo" "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
+    (is (= {:foo [2]} (unserialize "a:1:{s:3:\"foo\";a:1:{i:0;i:2;}}")))
+    (is (= {:foo "bar"} (unserialize "a:1:{s:3:\"foo\";s:3:\"bar\"}")))))
 
 (deftest parsing-objects
   (testing "objects are parsed into maps of their properties"
-    (is (= {"public" 1 "protected" 2 "private" 3}
+    (is (= {:public 1 :protected 2 :private 3}
            (unserialize (slurp "test/data/object.ser"))))
-    (is (= {"foo" 1} (unserialize "O:12:\"FooBarFooBar\":1:{s:3:\"foo\";i:1;}")))))
+    (is (= {:foo 1} (unserialize "O:12:\"FooBarFooBar\":1:{s:3:\"foo\";i:1;}")))))
 
 (deftest parsing-custom
   (testing "custom serialization format is ignored"

@@ -1,7 +1,8 @@
 
 (ns bernie.core
   (:import com.pugh.bernie.UnserializeException)
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [clojure.walk :refer [keywordize-keys]]))
 
 (defmulti parse #(subs % 0 1))
 
@@ -44,7 +45,8 @@
         ks (map first all)]
     (if (every? int? ks)
       (apply vector (map second all))
-      (apply hash-map keyvals))))
+      (keywordize-keys
+        (apply hash-map keyvals)))))
 
 (defn ->values [part]
   (let [data (data-of part)]

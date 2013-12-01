@@ -13,6 +13,8 @@ of serialized data and returns EDN.
   (:require [bernie.core :refer [unserialize]]))
 
 (unserialize "i:123;") ; => 123
+(unserialize "a:2:{i:0;s:3:"foo";i:1;d:456.78;}") ; => ["foo" 456.78]
+(unserialize "a:1:{s:3:"foo";i:123}") ; => {:foo 123}
 ```
 
 If the data supplied is not valid then an exception will most likely be thrown.
