@@ -28,22 +28,25 @@
   [(f part)
    (subs part (inc (semi part)))])
 
-(defn data-of [part]
-  (subs part 2))
-
 (defn content-of [data]
   (subs data (+ 2 (colon data))))
+
+(defn ->vec [all]
+  (apply vector (map second all)) )
+
+(defn ->hashmap [keyvals]
+  (keywordize-keys
+    (apply hash-map keyvals)))
 
 (defn ->vec-or-map [keyvals]
   (let [all (partition 2 keyvals)
         ks (map first all)]
     (if (every? int? ks)
-      (apply vector (map second all))
-      (keywordize-keys
-        (apply hash-map keyvals)))))
+      (->vec all)
+      (->hashmap keyvals))))
 
 (defn ->values [part]
-  (let [data (data-of part)]
+  (let [data (subs part 2)]
     (loop [results []
            content (content-of data)
            remaining (* 2 (length-of part))]
@@ -75,7 +78,7 @@
   (Double/parseDouble (value-of part)))
 
 (defn ->string [part]
-  (let [data (data-of part)
+  (let [data (subs part 2)
         length (length-of part)]
     [(subs (content-of data) 0 length)
      (subs data (+ 4 (colon data) length))]))
@@ -88,9 +91,9 @@
 
 (defn ->object [part]
   (let [length (length-of part)
-        data (subs part (+ 4 length (colon (data-of part))))
+        data (subs part (+ 4 length (colon (subs part 2))))
         [value more] (->values data)]
-    [(->vec-or-map (map clean-nulls value))
+    [(->hashmap (map clean-nulls value))
      more]))
 
 ;; Dispatching
