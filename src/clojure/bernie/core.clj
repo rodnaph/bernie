@@ -16,29 +16,23 @@
 (def colon (partial index-of ":"))
 (def semi (partial index-of ";"))
 
-(defn to-str [f]
-  (comp (partial apply str) f))
-
-(def stake (to-str take))
-(def sdrop (to-str drop))
-
 (defn value-of [part]
   (subs part 2 (semi part)))
 
 (defn length-of [part]
   (let [data (subs part 2)]
     (Long/parseLong
-      (stake (colon data) data))))
+      (subs data 0 (colon data)))))
 
 (defn rest-of [f part]
   [(f part)
-   (sdrop (inc (semi part)) part)])
+   (subs part (inc (semi part)))])
 
 (defn data-of [part]
-  (sdrop 2 part))
+  (subs part 2))
 
 (defn content-of [data]
-  (sdrop (+ 2 (colon data)) data))
+  (subs data (+ 2 (colon data))))
 
 (defn ->vec-or-map [keyvals]
   (let [all (partition 2 keyvals)
@@ -83,17 +77,18 @@
 (defn ->string [part]
   (let [data (data-of part)
         length (length-of part)]
-    [(stake length (content-of data))
-     (sdrop (+ 4 (colon data) length) data)]))
+    [(subs (content-of data) 0 length)
+     (subs data (+ 4 (colon data) length))]))
 
 (defn ->array [part]
   (let [[value more] (->values part)]
     [(->vec-or-map value)
-     (sdrop 1 more)]))
+     (if (> (count more) 0)
+       (subs more 1))]))
 
 (defn ->object [part]
   (let [length (length-of part)
-        data (sdrop (+ 4 length (colon (data-of part))) part)
+        data (subs part (+ 4 length (colon (data-of part))))
         [value more] (->values data)]
     [(->vec-or-map (map clean-nulls value))
      more]))
