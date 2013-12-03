@@ -55,8 +55,12 @@
     (is (= {:foo 1} (unserialize "O:12:\"FooBarFooBar\":1:{s:3:\"foo\";i:1;}")))))
 
 (deftest parsing-custom
-  (testing "custom serialization format is ignored"
-    (is (thrown? UnserializeException (unserialize "a:1:{i:0;C:4:\"Test\":6:{foobar}i:1;i:1;}")))))
+  (testing "custom serialization is assumed to be a serialized string"
+    (is (= [[1]] (unserialize "a:1:{i:0;C:4:\"Test\":14:{a:1:{i:0;i:1;}}i:1;i:1;}")))))
+
+(deftest parsing-references
+  (testing "parsing references throws an exception"
+    (is (thrown? UnserializeException (unserialize "a:2:{i:0;i:1;i:1;R:2;}")))))
 
 (run-tests)
 

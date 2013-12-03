@@ -30,9 +30,24 @@ numeric it'll create a vector, otherwise you'll get back a hashmap.
 
 ## Custom Serialization
 
-Bernie does not support the 'C' custom serialization format, as the
-implementing code will not be available.  And serialized data containing
-this information will throw an exception.
+For custom serialization ('C') Bernie assumes the content is serialized data
+itself.  This is because the usual way this is used is as follows:
+
+```php
+class Test implements \Serializable
+{
+    public function serialize()
+    {
+        return serialize(array(
+            // properties
+        ));
+    }
+}
+```
+
+## References
+
+The reference type 'R' is currently not supported, and will throw an _UnserializeException_.
 
 ## Installation
 

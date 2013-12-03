@@ -96,6 +96,12 @@
     [(->hashmap (map clean-nulls value))
      more]))
 
+(defn ->custom [part]
+  (let [data (subs part (+ 4 (length-of part) (colon (subs part 2))))
+        length (length-of data)
+        content (subs (content-of data) 3 (+ 3 length))]
+    (parse content)))
+
 ;; Dispatching
 ;; -----------
 
@@ -106,7 +112,8 @@
 (defmethod parse "s" [part] (->string part))
 (defmethod parse "a" [part] (->array part))
 (defmethod parse "O" [part] (->object part))
-(defmethod parse "C" [part] (throw (UnserializeException. "Custom serialization not supported")))
+(defmethod parse "C" [part] (->custom part))
+(defmethod parse "R" [part] (throw (UnserializeException. "Custom serialization not supported")))
 
 ;; Public
 ;; ------
