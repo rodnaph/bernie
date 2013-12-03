@@ -117,7 +117,7 @@
 (defmethod parse "a" [part] (->array part))
 (defmethod parse "O" [part] (->object part))
 (defmethod parse "C" [part] (->custom part))
-(defmethod parse "R" [part] (throw (UnserializeException. "Custom serialization not supported")))
+(defmethod parse "R" [part] (throw (UnserializeException. "References not supported")))
 
 ;; Public
 ;; ------
