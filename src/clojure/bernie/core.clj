@@ -31,21 +31,21 @@
 (defn content-of [data]
   (subs data (+ 2 (colon data))))
 
-(defn ->vec [all]
-  (apply vector (map second all)) )
+(defn to-vector [all]
+  (apply vector (map second all)))
 
-(defn ->hashmap [keyvals]
+(defn to-hashmap [keyvals]
   (keywordize-keys
-    (apply hash-map keyvals)))
+        (apply hash-map keyvals)))
 
-(defn ->vec-or-map [keyvals]
+(defn vector-or-hashmap [keyvals]
   (let [all (partition 2 keyvals)
         ks (map first all)]
     (if (every? int? ks)
-      (->vec all)
-      (->hashmap keyvals))))
+      (to-vector all)
+      (to-hashmap keyvals))))
 
-(defn ->values [part]
+(defn to-values [part]
   (let [data (subs part 2)]
     (loop [results []
            content (content-of data)
@@ -84,23 +84,27 @@
      (subs data (+ 4 (colon data) length))]))
 
 (defn ->array [part]
-  (let [[value more] (->values part)]
-    [(->vec-or-map value)
+  (let [[value more] (to-values part)]
+    [(vector-or-hashmap value)
      (if (> (count more) 0)
        (subs more 1))]))
 
 (defn ->object [part]
-  (let [length (length-of part)
-        data (subs part (+ 4 length (colon (subs part 2))))
-        [value more] (->values data)]
-    [(->hashmap (map clean-nulls value))
-     more]))
+  (let [[value more] (->> (->string part)
+                          (second)
+                          (str "X:")
+                          (to-values))]
+    [(to-hashmap (map clean-nulls value))
+     (subs more 1)]))
 
 (defn ->custom [part]
-  (let [data (subs part (+ 4 (length-of part) (colon (subs part 2))))
-        length (length-of data)
-        content (subs (content-of data) 3 (+ 3 length))]
-    (parse content)))
+  (let [more (second (->string part))
+        length (->> (colon more)
+                    (subs more 0)
+                    (Long/parseLong))
+        start (+ 2 (colon more))
+        custom (subs more start (+ start length))]
+    (parse custom)))
 
 ;; Dispatching
 ;; -----------
