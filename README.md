@@ -47,7 +47,11 @@ class Test implements \Serializable
 
 ## References
 
-The reference type 'R' is currently not supported, and will throw an _UnserializeException_.
+The reference type 'R' is currently not supported, and will return nil.
+
+```clojure
+(unserialize "R:1;") ; => nil
+```
 
 ## Installation
 

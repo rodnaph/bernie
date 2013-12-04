@@ -59,8 +59,8 @@
     (is (= [[1]] (unserialize "a:1:{i:0;C:4:\"Test\":14:{a:1:{i:0;i:1;}}i:1;i:1;}")))))
 
 (deftest parsing-references
-  (testing "parsing references throws an exception"
-    (is (thrown? UnserializeException (unserialize "a:2:{i:0;i:1;i:1;R:2;}")))))
+  (testing "parsing references uses nil"
+    (is (= [1 nil] (unserialize "a:2:{i:0;i:1;i:1;R:2;}")))))
 
 (run-tests)
 
