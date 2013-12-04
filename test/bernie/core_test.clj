@@ -62,5 +62,10 @@
   (testing "parsing references uses nil"
     (is (= [1 nil] (unserialize "a:2:{i:0;i:1;i:1;R:2;}")))))
 
+(deftest parsing-bad-data
+  (testing "bad data throws an exception"
+    (is (thrown? UnserializeException (unserialize "INVALIDDATA")))
+    (is (thrown? UnserializeException (unserialize "a:1:{}")))))
+
 (run-tests)
 
