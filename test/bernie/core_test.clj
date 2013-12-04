@@ -56,7 +56,7 @@
 
 (deftest parsing-custom
   (testing "custom serialization is assumed to be a serialized string"
-    (is (= [[1]] (unserialize "a:1:{i:0;C:4:\"Test\":14:{a:1:{i:0;i:1;}}i:1;i:1;}")))))
+    (is (= [[1] 1] (unserialize "a:2:{i:0;C:4:\"Test\":14:{a:1:{i:0;i:1;}}i:1;i:1;}")))))
 
 (deftest parsing-references
   (testing "parsing references uses nil"
