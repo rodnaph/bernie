@@ -4,7 +4,7 @@
   (:require [clojure.string :as str]
             [clojure.walk :refer [keywordize-keys]]))
 
-(defmulti parse #(subs % 0 1))
+(defmulti parse (comp str first))
 
 (defn int? [value]
   (boolean
@@ -46,22 +46,26 @@
       (to-hashmap keyvals))))
 
 (defn to-values [part]
-  (let [data (subs part 2)]
-    (loop [results []
-           content (content-of data)
-           remaining (* 2 (length-of part))]
-      (if (> remaining 0)
-        (let [[value more] (parse content)]
-          (recur
-            (conj results value)
-            more
-            (dec remaining)))
-        [results content]))))
+  (loop [results []
+         content (content-of (subs part 2))
+         remaining (* 2 (length-of part))]
+    (if (> remaining 0)
+      (let [[value more] (parse content)]
+        (recur
+          (conj results value)
+          more
+          (dec remaining)))
+      [results content])))
 
 (defn clean-nulls [value]
   (if (string? value)
     (str/replace value #"\x00.*\x00" "")
     value))
+
+(defn skip [string length]
+  (if (> (count string) length)
+    (subs string length)
+    ""))
 
 ;; Parsing
 ;; -------
@@ -86,8 +90,7 @@
 (defn ->array [part]
   (let [[value more] (to-values part)]
     [(vector-or-hashmap value)
-     (if (> (count more) 0)
-       (subs more 1))]))
+     (skip more 1)]))
 
 (defn ->object [part]
   (let [[value more] (->> (->string part)
@@ -95,16 +98,17 @@
                           (str "X:")
                           (to-values))]
     [(to-hashmap (map clean-nulls value))
-     (subs more 1)]))
+     (skip more 1)]))
 
 (defn ->custom [part]
-  (let [more (second (->string part))
-        length (->> (colon more)
-                    (subs more 0)
+  (let [data (second (->string part))
+        length (->> (colon data)
+                    (subs data 0)
                     (Long/parseLong))
-        start (+ 2 (colon more))
-        custom (subs more start (+ start length))]
-    (parse custom)))
+        start (+ 2 (colon data))
+        custom (subs data start)
+        [value more] (parse custom)]
+    [value (skip more 1)]))
 
 ;; Dispatching
 ;; -----------
