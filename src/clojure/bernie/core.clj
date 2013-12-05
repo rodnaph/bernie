@@ -113,6 +113,7 @@
 ;; Dispatching
 ;; -----------
 
+(defmethod parse "" [part] (rest-of ->nil part))
 (defmethod parse "N" [part] (rest-of ->nil part))
 (defmethod parse "b" [part] (rest-of ->boolean part))
 (defmethod parse "i" [part] (rest-of ->long part))

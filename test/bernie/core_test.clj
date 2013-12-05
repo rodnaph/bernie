@@ -13,6 +13,10 @@
     (is (= "foobar" (unserialize (slurp "test/data/string.ser"))))
     (is (= [1 2 3] (unserialize (slurp "test/data/array.ser"))))))
 
+(deftest parsing-empty-string
+  (testing "that parsing the empty string returns nil"
+    (is (= nil (unserialize "")))))
+
 (deftest parsing-nulls
   (testing "null is parsed as nil"
     (is (= nil (unserialize "N;")))))
