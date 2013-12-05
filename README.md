@@ -53,6 +53,10 @@ The reference type 'R' is currently not supported, and will return nil.
 (unserialize "R:1;") ; => nil
 ```
 
+## Invalid Data
+
+Any invalid data will throw a _com.pugh.bernie.UnserializeException_.
+
 ## Installation
 
 Bernie is available via [Clojars](https://clojars.org/rodnaph/bernie).
